@@ -1,0 +1,57 @@
+Test set contains blurred images of violent data
+
+1. Kernel size: (10, 10)
+
+Results:
+
+Violent: 1319
+Non-Violent: 187
+
+Confusion Matrix:
+[[ 187 1319]
+ [   0    0]]
+
+2. Kernel size: (20, 20)
+
+Results:
+
+Violent: 1316
+Non-Violent: 190
+
+Confusion Matrix:
+[[ 190 1316]
+ [   0    0]]
+
+3. Kernel size: (25,25)
+
+Results:
+
+Violent: 1316
+Non-Violent: 190
+
+Confusion Matrix:
+[[ 190 1316]
+ [   0    0]]
+
+4. Kernel size: (35, 35)
+
+Results:
+
+Violent: 1317
+Non-Violent: 189
+
+Confusion Matrix:
+[[ 189 1317]
+ [   0    0]]
+
+
+5. Kernel size: (50, 50)
+
+Results:
+
+Violent: 1334
+Non-Violent: 172
+
+Confusion Matrix:
+[[ 172 1334]
+ [   0    0]]

@@ -1,0 +1,28 @@
+/*
+ * File: alexnetTestResults.txt
+ * Project: trainedModels
+ * File Created: October 2019
+ * Author: Shalini Chaudhuri (you@you.you)
+ */
+Accuracy (Sklearn): 0.8865979381443299
+F1-Score (Sklearn): 0.8842105263157894
+Precision Score: 0.9047949965253649
+Recall Score: 0.8645418326693227
+
+Confusion Matrix:
+[[1364  137]
+ [ 204 1302]]
+
+Classification Report:
+              precision    recall  f1-score   support
+
+           0       0.87      0.91      0.89      1501
+           1       0.90      0.86      0.88      1506
+
+    accuracy                           0.89      3007
+   macro avg       0.89      0.89      0.89      3007
+weighted avg       0.89      0.89      0.89      3007
+
+
+
+Accuracy of the network on the test images: 88 %
