@@ -1,0 +1,64 @@
+Blocked image… why? On fb
+
+Datasets : 
+
+https://medium.com/syncedreview/huge-new-nsfw-dataset-for-content-filtering-c8e6a323d67c
+
+https://syncedreview.com/2019/02/18/huge-new-nsfw-dataset-for-content-filtering/
+
+https://syncedreview.com/2019/01/15/nsfw-dataset-removes-humans-from-content-review/
+
+https://towardsdatascience.com/comparison-of-the-best-nsfw-image-moderation-apis-2018-84be8da65303
+
+https://lionbridge.ai/datasets/best-content-moderation-datasets-machine-learning/
+
+https://www.kaggle.com/mohamedmustafa/real-life-violence-situations-dataset
+
+https://www.kaggle.com/gunviolencearchive/gun-violence-database
+
+NSFW Dataset: https://github.com/EBazarov/nsfw_data_source_urls
+
+https://www.interdigital.com/data_sets/violent-scenes-dataset#
+
+https://iopscience.iop.org/article/10.1088/1742-6596/844/1/012044
+
+https://pypi.org/project/imgur-scraper/
+
+http://www.clickdamage.com/sourcecode/cv_datasets.php
+
+https://arxiv.org/pdf/1709.06204.pdf
+
+python images scraper from imgur.com : https://pypi.org/project/imgur-scraper/
+
+
+(1) Hockey Fight dataset, http://visilab.etsii.uclm.es/personas/oscar/FightDetection/index.html (2) BEHAVE dataset, http://groups.inf.ed.ac.uk/vision/BEHAVEDATA/INTERACTIONS/ (3) Crowd Violence dataset, http://www.openu.ac.il/home/hassner/data/violentflows/.
+
+https://www.openu.ac.il/home/hassner/data/violentflows/ - videos
+
+https://github.com/yahoo/open_nsfw
+
+http://kt.agh.edu.pl/matiolanski/KnivesImagesDatabase/
+
+https://sci2s.ugr.es/weapons-detection
+
+Check 3rd column - sept 5th - https://mahdi-roozbahani.github.io/CS46417641-fall2019/
+
+
+Your project can be about applying any of the techniques we studied in class to real world problems. You can also extend a technique, or empirically analyze it. Comparisons between two approaches are also welcome. It is wonderful if you design and evaluate a novel approach to an important existing or new vision problem. Be creative! Students are allowed to use existing code for their projects. However, do make sure that you add proper references/citations to any existing code that you might use (for e.g. links to GitHub repos etc.). Also, students are expected to do a substantial amount of work to build on top of the existing implementations (if used) and clearly delineate the scope of what was available v/s what was done by them as part of their project updates. You must work in teams of 3-5. Students should maintain a nice, professional looking, visual, self-contained webpage describing their project. We will link to all project pages from the class webpage. The following are deliverables for your project. All the deliverables (including the proposal) are to be submitted via the project web-page. The webpage source files should be added to a ZIP folder and uploaded to Canvas.
+Proposal (20% of project grade): A description of the following (to be submitted via the project web-page):
+Problem statement: Clearly state the goal of your project. When someone uses your system, what is the expected input to the system, and what is the desired output?
+Goal: 
+Input:
+Desired Output:
+Approach: Describe the technical approach you plan to employ.
+Experiments and results: Describe the experimental setup you will follow, which datasets you will use, which existing code you will exploit, what you will implement yourself, and what you would define as a success for the project. If you plan on collecting your own data, describe what data collection protocol you will follow. Provide a list of experiments you will perform. Describe what you expect the experiments to reveal, or what is uncertain about the potential outcomes.
+
+
+
+
+
+
+
+
+
+

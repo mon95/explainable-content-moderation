@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>Explainable Content Moderation Using Convolutional Neural Networks</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+  </head>
+  <body>
+    <section class="page-header">
+      <h1 class="project-name">Explainable Content Moderation Using Convolutional Neural Networks</h1>
+      <h2 class="project-tagline">CS 6476 Project</h2>
+      <a href="https://github.gatech.edu/rmujumdar6/cs6476-computervision-project" class="btn">View on GitHub</a>
+      <a href="proposal.html" class="btn">Proposal</a>
+      <a href="ProjectUpdate1.html" class="btn">Project Update 1</a>
+    </section>
+
+    <section class="main-content">
+      <h2>
+<a id="Abstract" class="anchor" href="#Abstract" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Abstract</h2>
+<p>One of the biggest challenges faced by social media networks today is content moderation. This becomes a problem when potentially offensive content demonstrating violence, portraying sexually explicit images, advocating the use of weapons, etc are posted. We would like to create a model that can auto-moderate such content.
+</p>
+<p>The main objective of our project is to robustly classify and flag images as offensive or non-offensive. These images can be offensive due to the presence of violence, blood, weapons, sexual or other graphic content. Our model should be able to discriminate between such inappropriate images and other images. The classification decision made by the system should also be explainable to ensure that the system does not harbour any biases such as flagging all images with humans as offensive or tagging all images with red liquids as offensive. </p>
+<p>Our initial set of experiments was to build a classifier that could discriminate between offensive and inoffensive images. Using transfer learning with convolutional neural networks, we were able to achieve a 89% accuracy in our task.</p>
+
+<p><center><img src="teaser_violent.png" style="width:700px; height: 340px; " alt="something"></center></p>
+<p><center><img src="teaser_nonviolent.png" style="width:700px; height: 250px; " alt="something"></center></p>
+
+<h2>
+<a id="Introduction" class="anchor" href="#Introduction" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Introduction</h2>
+<p>Since the advent of social media, text, images and videos uploaded by users become visible and accessible to millions of other users. This becomes a problem when potentially offensive content demonstrating violence, portraying sexually explicit images, advocating the use of weapons, etc are posted. While there are human content reviewers, the volume of data produced automatically makes this a problem that needs to be solved at scale and is thus a good candidate to be solved using learning techniques. There are numerous issues with content moderation <a href="#ref2">[2]</a>. One of the main problems encountered with content moderation is that the process is both inconsistent and lacks transparency in terms of why a certain content is flagged. So, any robust automation system should be able to consistently capture the correct contents that need to be flagged and be able to clearly explain the reason for flagging of a certain content. This is important as we would like to be able to scale with ease (automated flagging) and at the same time take care to provide feedback (explainability) to the user uploading the content as well as to potentially any human moderators auditing the moderation results to help prevent cases where images get mislabelled as offensive, to investigate appeals from users, etc. In our system, we will be working with images to classify them as offensive or not while also explaining the reason behind the decision.
+</p>
+<h2>
+<a id="system-architecture" class="anchor" href="#system-architecture" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>System Architecture</h2>
+<p><img src="arch-main.png" alt="something"></p>
+
+<h2>
+<a id="Approach" class="anchor" href="#Approach" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Approach</h2>
+<p>We approach Content Moderation as a binary classification problem with 2 broad categories - offensive images and non-offensive images. </p>
+<p>We use Convolutional Neural Networks (CNNs) to perform a supervised binary classification of images into these two categories. Specifically, we perform feature extraction on the images in our dataset using transfer learning from the following pre-trained CNNs to build the binary classifier.
+</p>
+
+<ol>
+  <li>
+    Alexnet
+  </li>
+  <li>
+    Resnet-18
+  </li>
+  <li>
+    Inceptionv3
+  </li>
+  <li>
+    VGG16
+  </li>
+</ol>
+
+<p>
+Post this, we use Grad-CAM[1], which is a class-discriminative localization technique to generate visual explanations of the salience regions in the classified images that caused the images to be classified as offensive.
+</p>
+
+<p>
+  In performing the classification and generating visual explanations, we build what would form the basis (a minimum viable product version) of a content moderation system for offensive images. The system could help end-users / human moderators identify images to be flagged as well as ‘see’ what caused the image to be flagged as offensive. In further experiments, we aim to explore how augmenting an image and/or replacing certain parts of the image with specific offensive/non-offensive content changes the behaviour.
+</p>
+<p>
+  In our approach we had to make several design choices and judgement calls which we have addressed as follows :
+  <hr>
+  <ol start="1">
+    <li>
+      <em> Why are we approaching the problem as a classification problem and proposing the use of CNNs? What about object detection or any other techniques? </em>
+    </li>
+  </ol>
+  <hr>
+</p>
+<p>
+  We expect that there are latent factors involved in identifying an image as potentially offensive. For instance, in the case of differentiating between images portraying violence and other images, we may not always be able to look for objects (such as knives), or something specific like fire/blood, etc in the scene in a manner that is scalable. Classification of the images using a fine-tuned Convolutional Neural Network will help us identify the nuances involved in flagging the images. With the proposed approach, we should be able to understand and see the reasoning behind the same as well. We believe that such a model is more helpful in a real-world setting where there’s usually a combination of human content-reviewers, rule-based systems and ML systems working together. This could help reduce the  gap in understanding the reasons behind the machine’s take on a certain piece of content versus that of a human.
+ <hr>
+  <ol start="2">
+    <li>
+      <em>
+      Why didn’t we formulate the problem as classifying videos, when we have a video dataset available?
+    </em>
+    </li>
+  </ol>
+<hr>
+</p>
+<p>
+  It is far more common to have offensive images  and we can always sample images from videos. Thus, formulating the problem as image classification has a much wider application scope.
+  <hr>
+  <ol start="3">
+    <li>
+      <em>
+      Of the two transfer learning approaches - fine-tuning and fixed feature extraction, why did we go with the latter?
+    </em>
+    </li>
+  </ol>
+  <hr>
+</p>
+<p>
+  Since our dataset is relatively small and does not have a variety of unique examples, it is not a good idea to fine-tune the ConvNet due to overfitting concerns. We expect higher-level features in the ConvNet to be relevant to this dataset as well. Hence, we are using the pre-trained network as a feature extractor and retrain the final layer for our classification problem. Thus, we derive predictions by updating only the final layer weights.
+  <hr>
+  <ol start="4">
+    <li>
+      <em>
+      Why did we use these 4 models to train the classifiers? 
+    </em>
+    </li>
+  </ol>
+  <hr>
+</p>
+<p>
+  Our intention is to compare the performance metrics of different classifiers and choose the best one going forward. AlexNet, VGG16, ResNet and InceptionV3 are all landmark ConvNet architectures trained on ImageNet and have proven to demonstrate a high accuracy. These networks have been used for other transfer learning tasks and perform well over a wide range of problems.
+  <hr>
+  <ol start="5">
+    <li>
+      <em>
+      Why did we choose this particular dataset?
+    </em>
+    </li>
+  </ol>
+  <hr>
+</p>
+<p>
+  This dataset contains a balanced mix of both violent and non-graphic videos from Youtube. The real-life violent content comes majorly from street fights. Apart from the violence videos, there are videos containing regular activities like eating and playing football. We intend to extract frames from each video and treat them as separate, labelled images. This wide range of activities in the dataset would help us make our model robust and take care of corner cases and false positives.
+</p>
+
+<h2>
+<a id="Experiments and Results" class="anchor" href="#Experiments and Results" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Experiments and Results</h2>
+
+<h2>
+<a class="anchor" href="#Experiments and Results" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Part I: Image Classification
+</h2>
+<p>We trained our dataset using the four different classifiers mentioned above, all of them CNN architectures. </p>
+<p>We split the data set into 3 sets - train, validation and test. The classifiers are trained using a transfer learning approach where we extract features from pre-trained convnets and modify the final fully-connected layer to suit our data. The transfer learning is performed on  a ConvNet pretrained on ImageNet and backprop is done on only the final, modified layer and the weights from the pretrained layers are kept as is. Thus the rest of the ConvNet as a fixed feature extractor for the new dataset. </p>
+<p>Details about the data used: (Images are sampled from the videos from <a href="#ref2">[4]</a> via an offline process)</p>
+<table>
+  <tr>
+    <th>Type of Data<br></th>
+    <th>Number of Violent Images</th>
+    <th>Number of Non-Violent Images</th>
+    <th>Total Number of Images</th>
+  </tr>
+  <tr>
+    <td>Training</td>
+    <td>8091</td>
+    <td>9409</td>
+    <td>17500</td>
+  </tr>
+  <tr>
+    <td>Validation</td>
+    <td>1513</td>
+    <td>1506</td>
+    <td>3019</td>
+  </tr>
+  <tr>
+    <td>Test</td>
+    <td>1506</td>
+    <td>1501</td>
+    <td>3007</td>
+  </tr>
+</table>
+<p>As per our dataset, a ‘dumb’ classifier (always ‘yes’ or always ‘no’)  or a random classifier(randomly classification) would perform classification with an accuracy of close to 50%.</p>
+
+<h4>Algorithms used and their parameters</h4>
+<table>
+  <tr>
+    <th>Parameter</th>
+    <th>Value used</th>
+    <th>Motivation</th>
+  </tr>
+  <tr>
+    <td>num_classes</td>
+    <td>2</td>
+    <td>The images need to be classified as ‘violent’ or ‘non-violent’.</td>
+  </tr>
+  <tr>
+    <td>batch_size</td>
+    <td>4/8</td>
+    <td>Batch-size was 8 for Inception, AlexNet and VGG. ResNet used a batch size of 4. The batch sizes was chosen due to computational limitations of the machines we were using.</td>
+  </tr>
+  <tr>
+    <td>num_epochs</td>
+    <td>15</td>
+    <td>We used the pre-trained models as feature extractors and were training the last layer for our classification problem. In this case, 15 epochs was sufficient for the models to learn the problem. We were not noticing any changes beyond the first few epochs, so we capped it at 15.</td>
+  </tr>
+  <tr>
+    <td>learningRate, momentum</td>
+    <td>0.001, 0.9 respectively</td>
+    <td>The learning rate and momentum were set to these values to increase the probability of not getting stuck at a local optima.</td>
+  </tr>
+  <tr>
+    <td>Image Transforms</td>
+    <td>Resized Crop and Horizontal Flip</td>
+    <td>We did this to augment the dataset to be invariant to scale and rotation changes. This captures the variety/variance of real world scenes that will be encountered by the system during the test phase.</td>
+  </tr>
+  <tr>
+    <td>Validation</td>
+    <td></td>
+    <td>We had a validation dataset (that was independent from both the training and the testing data) that was used to determine if the model was overfitting. The best performing model on the validation data for a particular network was used as the final network for testing.</td>
+  </tr>
+</table>
+<h4>Results</h4>
+<center>
+<table style="align-self: center; ">
+  <tr>
+    <th><span style="font-weight:700">Model</span></th>
+    <th><span style="font-weight:700">Accuracy</span></th>
+    <th><span style="font-weight:700">Precision</span></th>
+    <th><span style="font-weight:700">F1 Score</span></th>
+    <th><span style="font-weight:700">Recall</span></th>
+  </tr>
+  <tr>
+    <td>AlexNet</td>
+    <td>89%</td>
+    <td>90%</td>
+    <td>88</td>
+    <td>86%</td>
+  </tr>
+  <tr>
+    <td>VGG</td>
+    <td>92%</td>
+    <td>95%</td>
+    <td>92</td>
+    <td>89%</td>
+  </tr>
+  <tr>
+    <td>InceptionV3</td>
+    <td>89%</td>
+    <td>92%</td>
+    <td>89</td>
+    <td>86%</td>
+  </tr>
+  <tr>
+    <td>Resnet</td>
+    <td>88%</td>
+    <td>88%</td>
+    <td>88</td>
+    <td>88%</td>
+  </tr>
+</table>
+</center>
+
+<h3>
+<a class="anchor" href="#Experiments and Results" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a> Part I: Qualitative Results and Trends
+</h3>
+
+<h4>
+  <strong>
+  <a id="datasets" class="anchor" href="#datasets" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>True Positives (Violent classified as violent)
+</strong>
+</h4>
+
+<p>
+  As we can see from the examples below, these are images in which violence is very apparent in each frame. Each image has two or more people engaged in a physical fight. The fight is not occluded and therefore, our model is able to classify it accurately.
+</p>
+
+<table align="center">
+  <tr>
+    <td><center><img src="truepositive1.jpg" style="width:300px; height: 240px; " alt="something"></center></td>
+    <td><center><img src="truepositive2.jpg" style="width:300px; height: 240px; " alt="something"></center></td>
+  </tr>
+</table>
+<h4>
+  <strong>
+  <a class="anchor" href="#datasets" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>True Negatives (Non-violent classified as non-violent)
+</strong>
+</h4>
+<p>
+  These are examples of different types of non-violent images our model might encounter in the real world. Scenes from movies and news clips. People are engaged in a conversation or cheering for their favourite sports teams. This proves that our model does not simply classify images with people in close proximity as violent and thus proves that the model has learned useful characteristics in differentiating violent and non-violent images.
+</p>
+<table>
+  <tr>
+    <td><center><img src="truenegative2.jpg" style="width:700px; height: 270px; " alt="something"></center></td>
+    <td><center><img src="truenegative3.jpg" style="width:700px; height: 270px; " alt="something"></center></td>
+    <td><center><img src="truenegative1.jpg" style="width:700px; height: 270px; " alt="something"></center></td>
+  </tr>
+</table>
+<h4>
+  <strong>
+  <a  class="anchor" href="#datasets" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>False Negatives (Violent classified as non-violent)
+</strong>
+</h4>
+<p>
+  There were two major categories within the set of false negative images.
+  <ol>
+    <li>
+      Since we extracted frames from a video, there are certain images which are non-violent but have been labelled as ‘violent’ in the ground truth. These images increase the false negative rate in our model. One of the post-processing steps that we could consider would be to use a majority voting decision for all frames of the video, for our particular dataset.
+    </li>
+  </ol>
+
+  <table>
+  <tr>
+    <td><center><img src="falsenegative1.jpg" style="width:600px; height: 200px; " alt="something"></center></td>
+    <td><center><img src="falsenegative2.jpg" style="width:600px; height: 200px; " alt="something"></center></td>
+  </tr>
+  <tr>
+    <td><center><img src="falsenegative3.jpg" style="width:600px; height: 200px; " alt="something"></center></td>
+    <td><center><img src="falsenegative4.jpg" style="width:600px; height: 200px; " alt="something"></center></td>
+  </tr>
+</table>
+
+<br>
+  <ol>
+    <li>
+      Another category of false negatives arise from the presence of occlusions or when images in themselves are not violent but as a succession of images demonstrates a violent intention.
+    </li>
+  </ol>
+<br>
+  <table>
+  <tr>
+    <td><center><img src="occlusion3.jpg" style="width:400px; height: 220px; " alt="something"></center></td>
+    <td><center><img src="occlusion2.jpg" style="width:400px; height: 220px; " alt="something"></center></td>
+  </tr>
+  <tr>
+    <td><center><img src="occlusion.jpg"  style="width:400px; height: 220px; " alt="something"></center></td>
+    <td><center><img src="occlusion4.jpg" style="width:400px; height: 220px; " alt="something"></center></td>
+  </tr>
+</table>
+
+  <p>
+    For example, in the first row of images, due to occlusion and blurring the model is unable to identify it as a violent image.
+    The second row shows cases of violence where a particular image in itself may not contain enough characteristics to be called as violent but it is true that the series of images demonstrates violence or that there is potential violence that could follow (for eg., based on the setting in the image on the bottom right, we might be able to extrapolate that there was violence demonstrated at some later point in time)
+
+  </p>
+</p>
+
+<h4>
+  <strong>
+  <a  class="anchor" href="#datasets" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>False Positives ( Non violent classified as violent)
+</strong>
+</h4>
+<p>
+  We noticed a few interesting set of cases for false positive images.
+</p>
+<p>
+  In the first row, we suspect that the presence of a crowd in the left-most image is leading to it being classified as violent. Similarly, the positioning of the players in the right-most image seem similar to the common setting in most violent scenes.
+</p>
+<p>
+  The images in the bottom row were interesting candidates of false positives. We would need to analyze the salient regions using grad-cam visualizations in phase 2 to see what aspect of the image could be causing the misclassification. These are the kind of incorrect classifications which could be easily overturned by a human moderator (or for users, help them understand better and raise an appeal to overturn moderation decisions) if they were able to see what regions were contributing to the misclassification. Further, we believe this should help us train the model better by providing better examples that allow the model to learn better.
+</p>
+
+<table>
+  <tr>
+    <td><center><img src="falsepositive1.jpg"  alt="something"></center></td>
+    <td><center><img src="falsepositive2.jpg"  alt="something"></center></td>
+    <td><center><img src="falsepositive3.jpg"  alt="something"></center></td>
+  </tr>
+  <tr>
+    <td><center><img src="falsepositive4.jpg"  alt="something"></center></td>
+    <td><center><img src="falsepositive5.jpg"  alt="something"></center></td>
+    <td><center><img src="falsepositive6.jpg"  alt="something"></center></td>
+  </tr>
+</table>
+
+<h2>
+<a class="anchor" href="#Experiments and Results" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Part II: Implementing Grad-CAM</h2>
+<p>
+  Concluding the classification experiment, we decided to use the VGG network for the rest of the work as it performed the best out of the 4 architectures. The model which is now fine-tuned to the violence dataset, can be loaded to perform additional computation to identify the region of interest in the flagged images.
+  After loading the network, we prepare the dataset on which we want to test our output. To generate the Gradient-weighted class activation mapping, we find the gradient of the penultimate layer with respect to the activations of the most probable class, which was obtained by forward propagating the image through the network. We finally compute a heatmap which is of the size of the activation maps in the last convolutional layer of the network. This heatmap is reshaped to the size of the input image and superimposed to give the final output.
+</p>
+<h3>
+<a id="Qualitative Results and trends" class="anchor" href="#Qualitative Results and trends" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Part II: Qualitative Results and trends</h3>
+
+<p>
+  Examples where grad-cam performs well and helps capture salient regions correctly:
+</p>
+<p>
+  The below examples are instances where our model works well in localizing the salient regions. The violent part of the image is where the heatmap has higher value and causing the images to be classified as violent. It can be inferred from this, that our model has been able to correlate high level features like human contact and facial expressions with the act of violence. Additionally, it can be observed that the model is able to distinguish between general crowd from an actual brawl.
+</p>
+<center>
+<table style="align-self: center; " align="center">
+  <tr>
+    <th><span style="font-weight:700">Input Image (Class: Violent)</span></th>
+    <th><span style="font-weight:700">Grad-CAM output</span></th>
+  </tr>
+  <tr>
+    <td><center><img src="gradcam1.jpg" style="width:200px; height: 220px; " alt="something"></center></td>
+    <td><center><img src="gradcam1o.jpg" style="width:200px; height: 220px; " alt="something"></center></td>
+  </tr>
+  <tr>
+    <td><center><img src="gradcam2.jpg" style="width:250px; height: 220px; " alt="something"></center></td>
+    <td><center><img src="gradcam2o.jpg" style="width:250px; height: 220px; " alt="something"></center></td>
+  </tr>
+  <tr>
+    <td><center><img src="gradcam3.jpg" style="width:200px; height: 260px; " alt="something"></center></td>
+    <td><center><img src="gradcam3o.jpg" style="width:200px; height: 260px; " alt="something"></center></td>
+  </tr>
+</table>
+</center>
+
+<p>
+  In the following sequence of images, which are continuous frames from the video, we see that the exact salient regions change appropriately with respect to how the violence action changes in the video. 
+</p>
+<p>
+  In the below sequence, it is interesting to note that in the second and third frame, there is activation near the region where the person from the bottom joins in on the violence.
+</p>
+<center>
+<table style="align-self: center; " align="center" >
+   <tr>
+    <td><center><img src="seq1.jpg" style="width:200px; height: 160px; " alt="something"></center></td>
+    <td><center><img src="seq2.jpg" style="width:200px; height: 160px; " alt="something"></center></td>
+    <td><center><img src="seq3.jpg" style="width:200px; height: 160px; " alt="something"></center></td>
+  </tr>
+</table>
+</center>
+
+<p>
+  In the following sequence, we see that the network correctly captures the way the hands are interlocked as an important signal of violence.
+</p>
+
+<table style="align-self: center; " align="center" >
+   <tr>
+    <td><center><img src="seq10.jpg" style="width:200px; height: 160px; " alt="something"></center></td>
+    <td><center><img src="seq11.jpg" style="width:200px; height: 160px; " alt="something"></center></td>
+    <td><center><img src="seq12.jpg" style="width:200px; height: 160px; " alt="something"></center></td>
+  </tr>
+</table>
+
+<p>
+  Another longer example of a sequence where the salient regions are correctly identified in multiple continuous frames. Here, while there is a constant patch (on the floor) which should ideally not be contributing, we still notice that the upper region has similar importance which changes according to the change in each frame.
+</p>
+
+<table style="align-self: center; " align="center" >
+   <tr>
+    <td><center><img src="xx1.jpg" style="width:200px; height: 140px; " alt="something"></center></td>
+    <td><center><img src="xx2.jpg" style="width:200px; height: 140px; " alt="something"></center></td>
+    <td><center><img src="xx3.jpg" style="width:200px; height: 140px; " alt="something"></center></td>
+  </tr>
+   <tr>
+    <td><center><img src="xx4.jpg" style="width:200px; height: 140px; " alt="something"></center></td>
+    <td><center><img src="xx5.jpg" style="width:200px; height: 140px; " alt="something"></center></td>
+    <td><center><img src="xx6.jpg" style="width:200px; height: 140px; " alt="something"></center></td>
+  </tr>
+   <tr>
+    <td><center><img src="xx7.jpg" style="width:200px; height: 140px; " alt="something"></center></td>
+    <td><center><img src="xx8.jpg" style="width:200px; height: 140px; " alt="something"></center></td>
+    <td><center><img src="xx9.jpg" style="width:200px; height: 140px; " alt="something"></center></td>
+  </tr>
+</table>
+<br><br>
+
+<h4>
+  <strong>
+  <a  class="anchor" href="#datasets" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Examples of cases where the salient regions are not accurately captured:
+</strong>
+</h4>
+
+<p>
+  We also saw a few cases of incorrect highlighting of salient regions. 
+</p>
+
+<p>
+It is possible that our model has located the middle regions to have most activity and when the real action is happening close to the edges, it gives poorer results in comparison. 
+</p>
+<p>
+It is also possible that incorrectly flagged elements in the image contain some low-level features that the classifier appropriately learnt. In a broader sense on an intuitive level, these elements in the image could be objects that could potentially resemble humans involved in a physical fight.
+</p>
+
+<table style="align-self: center; " align="center">
+  <tr>
+    <th><span style="font-weight:700">Input Image (Class: Violent)</span></th>
+    <th><span style="font-weight:700">Grad-CAM output</span></th>
+  </tr>
+  <tr>
+    <td><center><img src="bad1.png" style="width:200px; height: 180px; " alt="something"></center></td>
+    <td><center><img src="bad1o.png" style="width:200px; height: 180px; " alt="something"></center></td>
+  </tr>
+  <tr>
+    <td><center><img src="bad2.png" style="width:200px; height: 200px; " alt="something"></center></td>
+    <td><center><img src="bad2o.png" style="width:200px; height: 200px; " alt="something"></center></td>
+  </tr>
+  <tr>
+    <td><center><img src="bad3.png" style="width:200px; height: 180px; " alt="something"></center></td>
+    <td><center><img src="bad3o.png" style="width:200px; height: 180px; " alt="something"></center></td>
+  </tr>
+</table>
+<br><br>
+
+<h4>
+  <strong>
+  <a  class="anchor" href="#datasets" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Blurring the Salient Regions:
+</strong>
+</h4>
+<p>
+  Using the output of GradCAM, we identified the salient regions that lie above a certain threshold and blurred those regions. We experimented with the kernel size of blurring filter to check the degree to which the blurring can effectively moderate a violent image. A larger kernel size will blur the image to a greater extent and therefore, obscure the region to a higher degree. 
+</p>
+
+<table style="align-self: center; " align="center">
+  <tr>
+    <th><span style="font-weight:700">Input Image</span></th>
+    <td><center><img src="gradcam3.jpg" style="width:160px; height: 180px; " alt="something"></center></td>
+    <td><center><img src="blur_orig.jpg" style="width:200px; height: 180px; " alt="something"></center></td>
+  </tr>
+  <tr>
+    <th><span style="font-weight:700">Grad-CAM output</span></th>
+    <td><center><img src="gradcam3o.jpg" style="width:160px; height: 200px; " alt="something"></center></td>
+    <td><center><img src="blur_gc.jpg" style="width:200px; height: 200px; " alt="something"></center></td>
+  </tr>
+  <tr>
+    <th><span style="font-weight:700">10 x 10 blur kernel</span></th>
+    <td><center><img src="blur10.png" style="width:160px; height: 180px; " alt="something"></center></td>
+    <td><center><img src="blurr10.jpg" style="width:200px; height: 180px; " alt="something"></center></td>
+  </tr>
+  <tr>
+    <th><span style="font-weight:700">25 x 25 blur kernel</span></th>
+    <td><center><img src="blur20.png" style="width:160px; height: 180px; " alt="something"></center></td>
+    <td><center><img src="blurr20.jpg" style="width:200px; height: 180px; " alt="something"></center></td>
+  </tr>
+  <tr>
+    <th><span style="font-weight:700">50 x 50 blur kernel</span></th>
+    <td><center><img src="blur50.png" style="width:160px; height: 180px; " alt="something"></center></td>
+    <td><center><img src="blurr50.jpg" style="width:200px; height: 180px; " alt="something"></center></td>
+  </tr>
+</table>
+<p>
+  To take advantage of our framework, we tried to see if blurring the region of interest changes the classification of the image or not. This is a good use-case where sensitive regions can be auto-blurred in real world scenarios. We observed that modifying the salient regions in the image does indeed change the behaviour as shown by the flipped moderation result in these cases.
+</p>
+
+<table style="align-self: center; " align="center">
+  <tr>
+    <th><span style="font-weight:700">Input Image (Class: Violent)</span></th>
+    <th><span style="font-weight:700">Grad-CAM output</span></th>
+    <th><span style="font-weight:700">Blurred Image (Category: Non-Violent)</span></th>
+  </tr>
+  <tr>
+    <td><center><img src="gradcam1.jpg" style="width:200px; height: 220px; " alt="something"></center></td>
+    <td><center><img src="gradcam1o.jpg" style="width:200px; height: 220px; " alt="something"></center></td>
+    <td><center><img src="final_blur1.png" style="width:200px; height: 220px; " alt="something"></center></td>
+  </tr>
+  <tr>
+    <td><center><img src="gradcam3.jpg" style="width:200px; height: 260px; " alt="something"></center></td>
+    <td><center><img src="gradcam3o.jpg" style="width:200px; height: 260px; " alt="something"></center></td>
+    <td><center><img src="final_blur.png" style="width:200px; height: 260px; " alt="something"></center></td>
+  </tr>
+</table>
+
+<h3>Results</h3>
+<p>
+  Following are the quantitative results we observe on investigating how the violent images get classified following blurring of the most salient regions across different kernel sizes
+</p>
+<table style="align-self: center; ">
+  <tr>
+    <th><span style="font-weight:700">Kernel Size for Blurring</span></th>
+    <th><span style="font-weight:700">Newly Classified as “Non Violent”</span></th>
+    <th><span style="font-weight:700">Newly Classified as “Violent”</span></th>
+  </tr>
+  <tr>
+    <td>10 x 10</td>
+    <td>187</td>
+    <td>1319</td>
+  </tr>
+  <tr>
+    <td>20 x 20</td>
+    <td>190</td>
+    <td>1316</td>
+  </tr>
+  <tr>
+    <td>25 x 25</td>
+    <td>190</td>
+    <td>1316</td>
+  </tr>
+  <tr>
+    <td>35 x 35</td>
+    <td>189</td>
+    <td>1317</td>
+  </tr>
+  <tr>
+    <td>50 x 50</td>
+    <td>172</td>
+    <td>1334</td>
+  </tr>
+</table>
+<p>
+  We notice that the change in classification peaks when we use a kernel size of (25,25). One possible reason for this could be that for very blurred regions, the network focuses on other areas to make the classification. It is also worth noting that blurring only the salient region does not change the classification for all images. This means offensive images are flagged not only due to the actions being depicted in the image but also the overall context of the scene.
+</p>
+<h2>
+<a id="Conclusion and future work" class="anchor" href="#Conclusion and future work:" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Conclusion and future work</h2>
+<p>Accuracies above 88% were observed using the proposed approach on all 4 models, with a highest accuracy of 95% and highest recall of 89%. Qualitative results demonstrate cases where the models are able to correctly classify a range of violent images as violent as well as specific cases where the classifier has not been able to detect violence correctly with potential explanations for the same.
+</p>
+<p>
+  Integrating Grad-CAM produces expected results, helping us visualize the explanations for classification. We were also able to create a robust process of auto-moderation by blurring the salient regions automatically. We believe, this framework can be extended in real world scenarios to improve the content moderation workflows. 
+</p>
+<p>
+  Thus, we showcase a simple, minimal viable content moderation system which identifies images to be flagged, with high accuracy and recall and explains the flagged results by highlighting the salient regions in the image that caused the image to be flagged.
+</p>
+<p>
+  This task was performed by sampling images from videos. In doing so, we lose out on temporal and contextual information that can be handy in identifying cases of violence (or even other reasons for a video to be flagged). Thus, moving to networks that can work with raw videos directly would be a useful extension.
+</p>
+<p>
+ In line with the above, another possible extension could involve tracking parts of image that have violent elements in them and blurring those video regions. This is akin to tracking objects in a video - but instead, we would be tracking dynamic regions in a video. In combination, this would be a more holistic approach towards content moderation for videos.
+</p>
+<p>
+  Apart from the above, there exist many challenges in the realm of content moderation. Some examples are - detection of textual content in images which may be inappropriate to the general audience, flagging content by looking at content on the whole (for eg., images and their captions/comments, ads and the text and other metadata accompanying the ad, etc) and so on. These problems may require more complex models and architectures that could potentially incorporate the ideas we explore as a part of the system to achieve better overall results.
+</p>
+<h2>
+<a id="authors-and-contributors" class="anchor" href="#authors-and-contributors" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Team</h2>
+<p>Shalini Chaudhuri &sdot; Rohit Mujumdar &sdot; Sushmita Singh &sdot; Sreehari Sreejith</p>
+
+      <footer class="site-footer">
+        <span class="site-footer-credits">
+          <h2>References</h2>
+          <ol>
+            <li id="ref1">
+              R. R. Selvaraju, M. Cogswell, A. Das, R. Vedantam, D. Parikh and D. Batra, "Grad-CAM: Visual Explanations from Deep Networks via Gradient-Based Localization," 2017 IEEE International Conference on Computer Vision (ICCV), Venice, 2017, pp. 618-626.
+            </li>
+            <li id="ref2" href="https://www.eff.org/deeplinks/2019/04/content-moderation-broken-let-us-count-ways">
+              https://www.eff.org/deeplinks/2019/04/content-moderation-broken-let-us-count-ways
+            </li>
+            <li id="ref3">
+              C.H. Demarty,C. Penet, M. Soleymani, G. Gravier. VSD, a public dataset for the detection of violent scenes in movies: design, annotation, analysis and evaluation. In Multimedia Tools and Applications, May 2014.
+            </li>
+            <li id="ref4" href="https://www.kaggle.com/mohamedmustafa/real-life-violence-situations-dataset">
+              https://www.kaggle.com/mohamedmustafa/real-life-violence-situations-dataset
+            </li>
+            <li id="ref5" href="https://www.interdigital.com/data_sets/violent-scenes-dataset#">
+              https://www.interdigital.com/data_sets/violent-scenes-dataset# 
+            </li>
+            <li id="ref6" href="https://medium.com/@stepanulyanin/implementing-grad-cam-in-pytorch-ea0937c31e82">
+              https://medium.com/@stepanulyanin/implementing-grad-cam-in-pytorch-ea0937c31e82 
+            </li>
+          </ol>
+        </span>
+      </footer>
+
+    </section>
+
+  
+  </body>
+</html>

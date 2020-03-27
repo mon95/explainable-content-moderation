@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>Explainable Content Moderation Using Convolutional Neural Networks</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+  </head>
+  <body>
+    <section class="page-header">
+      <h1 class="project-name">Explainable Content Moderation Using Convolutional Neural Networks</h1>
+      <h2 class="project-tagline">CS 6476 Project</h2>
+      <a href="https://github.gatech.edu/rmujumdar6/cs6476-computervision-project" class="btn">View on GitHub</a>
+      <a href="ProjectUpdate1.html" class="btn">Project Update 1</a>
+      <a href="index.html" class="btn">Project Update 2</a>
+    </section>
+
+    <section class="main-content">
+      <h2>
+<a id="introduction" class="anchor" href="#introduction" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Introduction</h2>
+<p>One of the biggest challenges faced by social media networks today is content moderation. Users are free to upload text, images and videos which become visible and accessible to millions of other users. This becomes a problem when potentially offensive content demonstrating violence, portraying sexually explicit images, advocating the use of weapons, etc are posted. While there are human content reviewers, the volume of data produced automatically makes this a problem that needs to be solved at scale and is thus a good candidate to be solved using learning techniques. There are numerous issues with content moderation <a href="#ref2">[2]</a>. One of the main problems encountered with content moderation is that the process is both inconsistent and lacks transparency in terms of why a certain content is flagged. So, any robust automation system should be able to consistently capture the correct contents that need to be flagged and be able to clearly explain the reason for flagging of a certain content. This is important as we would like to be able to scale with ease (automated flagging) and at the same time take care to provide feedback (explainability) to the user uploading the content as well as to potentially any human moderators auditing the moderation results to help prevent cases where images get mislabelled as offensive, to investigate appeals from users, etc.
+</p>
+<h2>
+<a id="goals-and-objectives" class="anchor" href="#goals-and-objectives" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Goals and Objectives</h2>
+<p>The main objective of our project is to robustly classify and flag images as offensive or non-offensive. These images can be offensive due to the presence of violence, blood, weapons, sexual or other graphic content. Our model should be able to discriminate between such inappropriate images and other images.  </p>
+<p>The second objective of our project is being able to explain what regions in an image led to it being classified as offensive. The classification decision made by the system should also be explainable to ensure that the system does not harbour any biases such as flagging all images with humans as offensive or tagging all images with red liquids as offensive. We will highlight the salient regions that contribute most to the decision taken by the system. This will help us understand if the model has learned the discriminating factor accurately as well as gain insights into the kind of regions or objects that tend to cause the image to be mislabelled as offensive. </p>
+<p>
+The input to our system will be images and the output would be a binary classification labelling the images as offensive or non-offensive. The images labelled offensive would also be marked with the salient regions that caused the images to be classified as offensive.
+</p>
+<h2>
+<a id="system-architecture" class="anchor" href="#system-architecture" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>System Architecture</h2>
+<p><img src="arch-main.png" alt="something"></p>
+<h2>
+<a id="approach" class="anchor" href="#approach" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Approach</h2>
+<p>We will approach Content Moderation as a binary classification problem with 2 broad categories - <em>offensive </em> images and <em>non-offensive</em>  images. </p>
+<p>We propose to use Convolutional Neural Networks (CNNs) to perform a supervised binary classification of images into these two categories. We will be fine-tuning an existing CNN using transfer learning approaches to suit our domain. </p>
+<p>We intend to use Grad-CAM<a href="#ref1">[1]</a>, which is a class-discriminative localization technique to generate visual explanations of the salience regions in the classified images that caused the images to be classified as <em>offensive</em>.</p>
+<p>In performing the classification and generating visual explanations, we build what would form the basis (a minimum viable product version) of a content moderation system for offensive images. The system could help end-users / human moderators identify images to be flagged as well as ‘see’ what caused the image to be flagged as offensive. In further experiments, we aim to explore how augmenting an image and/or replacing certain parts of the image with specific offensive/non-offensive content changes the behaviour.</p>
+<strong><em><p>Why are we approaching the problem as a classification problem and proposing the use of CNNs? What about object detection or any other techniques?</p></em></strong>
+<p>We expect that there are latent factors involved in identifying an image as potentially offensive. For instance, in the case of differentiating between images portraying violence and other images, we may not always be able to look for objects (such as knives), or something specific like fire/blood, etc in the scene in a manner that is scalable. Classification of the images using a fine-tuned Convolutional Neural Network will help us identify the nuances involved in flagging the images. With the proposed approach, we should be able to understand and see the reasoning behind the same as well. We believe that such a model is more helpful in a real-world setting where there’s usually a combination of human content-reviewers, rule-based systems and ML systems working together. This could help reduce the  gap in understanding the reasons behind the machine’s take on a certain piece of content versus that of a human. 
+</p>
+<h2>
+<a id="experiments-and-results" class="anchor" href="#experiments-and-results" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Experiments and Results</h2>
+<h4>
+<a id="datasets" class="anchor" href="#datasets" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Datasets</h4>
+<ol>
+<li>
+<p>Kaggle video dataset: <a href="#ref3">[3]</a>
+This dataset contains a balanced mix of both violent and non-graphic videos from Youtube. The real-life violent content comes majorly from street fights. Apart from the violence videos, there are videos containing regular activities like eating and playing football. We intend to extract frames from each video and treat them as separate, labelled images. This wide range of activities in the dataset would help us make our model robust and take care of corner cases and false positives. </p>
+</li>
+<li>
+<p>Violent Scenes Dataset: <a href="#ref4">[4]</a>
+This dataset is derived from the video clips of violent films. Apart from physical fights, the scenes in the clips include the presence of blood, fights, fire, guns,cold arms, car chases and other gory images. We found this dataset to be suitable because it encompasses different aspects of violence, in varying intensities and amounts, which would make our model explain a wide range of salient violence features. We have contacted the owners of this dataset and have been allowed by them to use it for our project.</p>
+</li>
+</ol>
+<h4>
+  System Model
+</h4>
+<p>Our model will use Convolutional Neural Networks(CNNs) for the classification problem. Due to the lack of an extensive dataset, we will use Transfer Learning on a pre-trained network used for scene classification. Even with limited data, transfer learning has shown improved accuracy and speed when compared to training the model from scratch. We intend to fine-tune the existing model to make it more suited for our context.</p>
+<p>We will integrate Grad-CAM within our model to explain our classification decision and identify salient regions in the image. This will enable us to create a model that can transparently explain the decisions taken and also help us in identifying the context the system has learned.</p>
+<h4>
+<a id="Measures of Success" class="anchor" href="#measure-of-success" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Measures of Success</h4>
+<p>The upfront measure of the success of our project is being able to classify violent images as offensive and being able to clearly point to the localized region in the image which caused the image to be classified as such. A further measure of success is being able to classify scenes with different types of violent activities (from fist-fights to gory accident scenes) and varying degrees of intensities of violence (two people fighting to mob violence). A crucial metric for our project would be perform classifications with as few false negatives as possible.We want the model to learn context-specific appropriateness for images too, i.e, a knife being present in the image of a kitchen should not be classified as offensive. 
+</p>
+<h4>Classification Outputs</h4>
+<table style="font-size:16px">
+  <tr>
+    <th>Input</th>
+    <th>Output (Classification + Salient Regions)</th>
+  </tr>
+  <tr>
+    <td>Images with blood, fire, violence such as:
+      <br>
+      <center><img src="street-figth.jpg"></center>
+    </td>
+    <td><span style="font-style:italic">Offensive </span>(True Positive)</td>
+  </tr>
+  <tr>
+    <td>Normal Images such as people playing, eating, objects on a table.
+      <center><img src="non-violent-image.jpg"></center></td>
+    <td><span style="font-style:italic">Non-Offensive</span> (True Negative)</td>
+  </tr>
+  <tr>
+    <td>Images which get mislabelled due to the presence of violent <br>elements taken out of context
+      <center><img src="football.jpg" style="width:250px; height: 180px; "></center></td>
+    <td><span style="font-style:italic">Offensive</span> (False Positive)</td>
+  </tr>
+  <tr>
+    <td>Images that are offensive but do not get categorized as such. <br>This has the highest misclassification <br>cost for our system.
+      <center><img src="false-negative.png" style="width:250px; height: 180px; "></center></td>
+    <td><span style="font-style:italic">Non-Offensive</span> (False Negative)</td>
+  </tr>
+</table>
+
+<h4>
+<a id="experiments" class="anchor" href="#experiments" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>List of Experiments</h4>
+<table style="font-size:16px">
+  <tr>
+    <th><span style="font-weight:700">Experiment</span></th>
+    <th><span style="font-weight:700">Motivation Behind the Experiment</span></th>
+    <th><span style="font-weight:700">Expected Result</span></th>
+    <th><span style="font-weight:700">Uncertainties in Results/Process</span></th>
+  </tr>
+  <tr>
+    <td>Transfer Learning to classify images as offensive or not</td>
+    <td>Identifying latent factors involved in identifying an image as potentially offensive</td>
+    <td>Binary Classification and Salient Region <br>Detection</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>Using an augmented <br>dataset to train model</td>
+    <td>Improving the accuracy <br>of our model</td>
+    <td>Higher precision <br>and accuracy</td>
+    <td>Obtaining/annotating <br>an augmented dataset?</td>
+  </tr>
+  <tr>
+    <td>Replacing salient regions detected <br>by Grad-CAM with <br>non-offensive objects <br><br>(eg. replacing a gun in an image with flower pot)</td>
+    <td>Check if the classification made <br>depends on the objects only <br>or also the context of the scene</td>
+    <td>Image should now be classified as <br><span style="font-style:italic">non-offensive given that other parts </span><br><span style="font-style:italic">of the image have no offensive content.</span></td>
+    <td>Is replacing one salient <br>object in the image enough?</td>
+  </tr>
+  <tr>
+    <td>Replacing salient regions in <br>violent images with a <br>blurred version</td>
+    <td>Automatically filter out <br>potential offensive images.</td>
+    <td>Possible extension to auto <br>moderate and blur offensive <br>sections.</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>Testing the model with degrees of violence <br>(eg. replacing one gunman with a mob)</td>
+    <td>How does the classification/explanation <br>change if the replacement is (relatively) <br><span style="font-style:italic">less/more violent</span></td>
+    <td>Images should correctly get <br>labelled according to their context</td>
+    <td>Model may not pick up heavily <br>suppressed instances of (potential violence)</td>
+  </tr>
+</table>
+<h3>
+<a id="extensions-to-our-approach" class="anchor" href="#extensions-to-our-approach" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Possible Extensions to our Approach:</h3>
+<ol>
+<li>
+<p>Replacing salient regions detected by Grad-CAM with non-offensive objects and seeing if the classification output changes. This is to check if the classification made depends on the objects only or also the context of the scene .</p>
+<p><img src="arch-extension1.png" alt="something"></p>
+
+</li>
+<li>
+<p>Data Augmentation by adding offensive objects to non-graphic images and checking if the classification of the scene changes.</p>
+<p><img src="arch-extension2.png" alt="something"></p>
+</li>
+</ol>
+<h2>
+<a id="authors-and-contributors" class="anchor" href="#authors-and-contributors" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Team</h2>
+<p>Shalini Chaudhuri &sdot; Rohit Mujumdar &sdot; Sushmita Singh &sdot; Sreehari Sreejith</p>
+
+      <footer class="site-footer">
+        <span class="site-footer-credits">
+          <h2>References</h2>
+          <ol>
+            <li id="ref1">
+              R. R. Selvaraju, M. Cogswell, A. Das, R. Vedantam, D. Parikh and D. Batra, "Grad-CAM: Visual Explanations from Deep Networks via Gradient-Based Localization," 2017 IEEE International Conference on Computer Vision (ICCV), Venice, 2017, pp. 618-626.
+            </li>
+            <li id="ref2">
+              https://www.eff.org/deeplinks/2019/04/content-moderation-broken-let-us-count-ways
+            </li>
+            <li id="ref3">
+              https://www.kaggle.com/mohamedmustafa/real-life-violence-situations-dataset
+            </li>
+            <li id="ref4">
+              C.H. Demarty,C. Penet, M. Soleymani, G. Gravier. VSD, a public dataset for the detection of violent scenes in movies: design, annotation, analysis and evaluation. In Multimedia Tools and Applications, May 2014.
+            </li>
+          </ol>
+        </span>
+      </footer>
+
+    </section>
+
+  
+  </body>
+</html>
