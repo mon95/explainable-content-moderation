@@ -1,4 +1,4 @@
-# Computervision Course Project 
+# Computer Vision Course Project 
 
 This repo has been moved (partially) from our internal private repository to serve as documentation and only certain code snippets we used are shared here. 
 
