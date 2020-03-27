@@ -6,5 +6,5 @@ For more info, please reach out over email.
 
 Link to 1-minute summary youtube video explaining the work: https://www.youtube.com/watch?v=86PUqs5kbaE 
 
-Link to website/blog describing the work in detail: https://mon95.github.io/explainable-content-moderation/
+Link to project webpage describing the work in detail: https://mon95.github.io/explainable-content-moderation/
 
